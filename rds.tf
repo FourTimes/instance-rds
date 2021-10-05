@@ -1,46 +1,26 @@
-module "vm-instance-one" {
-  source        = "./terraform-modules/ec2-instance"
-  vpc_id        = "xx"
-  subnet_id     = "xx"
-  keyname       = "xx"
-  ami           = "xx"
-  vmname        = "xx"
-  instance_type = "xx"
-  ports = {
-    "443"  = ["0.0.0.0/0"]
-    "22"   = ["0.0.0.0/0"]
-    "80"   = ["0.0.0.0/0"]
-    "8080" = ["0.0.0.0/0"]
-  }
-  additional_tags = {
-    environment = "demo"
-    Owner       = "htc"
-  }
-}
+resource "aws_security_group" "rdsSg" {
+  name        = "RDS-SG"
+  description = "Security group for RDS to traffic for ECS cluster"
+  vpc_id      = var.vpc_id
 
-module "vm-instance-two" {
-  source        = "./terraform-modules/ec2-instance"
-  vpc_id        = "yy"
-  subnet_id     = "yy"
-  keyname       = "yy"
-  ami           = "yy"
-  vmname        = "yy"
-  instance_type = "yy"
-  ports = {
-    "443"  = ["0.0.0.0/0"]
-    "22"   = ["0.0.0.0/0"]
-    "80"   = ["0.0.0.0/0"]
-    "8080" = ["0.0.0.0/0"]
+  ingress {
+    protocol    = "tcp"
+    from_port   = 3306
+    to_port     = 3306
+    cidr_blocks = ["0.0.0.0/0"]
   }
-  additional_tags = {
-    environment = "demo"
-    Owner       = "htc"
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 
 module "db" {
-  source  = "./terraform-modules/rds-database"
+  source     = "./terraform-modules/rds-database"
   identifier = "stagedb"
   # Engine status
   engine               = "mysql"
@@ -57,9 +37,9 @@ module "db" {
   # Disble iam database authentication
   iam_database_authentication_enabled = false
   # security group
-  vpc_security_group_ids = [aws_security_group.rds-sg.id]
-  maintenance_window = "Mon:00:00-Mon:03:00"
-  backup_window      = "03:00-06:00"
+  vpc_security_group_ids = [aws_security_group.rdsSg.id]
+  maintenance_window     = "Mon:00:00-Mon:03:00"
+  backup_window          = "03:00-06:00"
   # Enhanced Monitoring - see example for details on how to create the role
   # by yourself, in case you don't want to create it automatically
   monitoring_interval    = "30"
@@ -71,7 +51,7 @@ module "db" {
     Environment = "prod"
   }
   # DB subnet group
-  subnet_ids = [ var.subnet-i-id, var.subnet-2-id ]
+  subnet_ids = [var.subnet1-id, var.subnet2-id]
   # Final snapshot
   skip_final_snapshot = true
   # Database Deletion Protection
