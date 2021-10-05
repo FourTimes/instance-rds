@@ -2,16 +2,14 @@
 
 module "vm-instance-one" {
   source        = "./terraform-modules/ec2-instance"
-  vpc_id        = "xx"
-  subnet_id     = "xx"
-  keyname       = "xx"
-  ami           = "xx"
-  vmname        = "xx"
-  instance_type = "xx"
+  vpc_id        = aws_vpc.vpc.id
+  subnet_id     = aws_subnet.s1.id
+  keyname       = "traacs-new"
+  ami           = "ami-0a23ccb2cdd9286bb"
+  vmname        = "jenkins-server"
+  instance_type = "t2.micro"
   ports = {
-    "443"  = ["0.0.0.0/0"]
     "22"   = ["0.0.0.0/0"]
-    "80"   = ["0.0.0.0/0"]
     "8080" = ["0.0.0.0/0"]
   }
   additional_tags = {
@@ -24,16 +22,14 @@ module "vm-instance-one" {
 
 module "vm-instance-two" {
   source        = "./terraform-modules/ec2-instance"
-  vpc_id        = "yy"
-  subnet_id     = "yy"
-  keyname       = "yy"
-  ami           = "yy"
-  vmname        = "yy"
-  instance_type = "yy"
+  vpc_id        = aws_vpc.vpc.id
+  subnet_id     = aws_subnet.s2.id
+  keyname       = "traacs-new"
+  ami           = "ami-0a23ccb2cdd9286bb"
+  vmname        = "tomcat-server"
+  instance_type = "t2.micro"
   ports = {
-    "443"  = ["0.0.0.0/0"]
     "22"   = ["0.0.0.0/0"]
-    "80"   = ["0.0.0.0/0"]
     "8080" = ["0.0.0.0/0"]
   }
   additional_tags = {

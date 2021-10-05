@@ -1,7 +1,7 @@
 resource "aws_security_group" "rdsSg" {
   name        = "RDS-SG"
-  description = "Security group for RDS to traffic for ECS cluster"
-  vpc_id      = var.vpc_id
+  description = "Security group for RDS to traffic for EC2 instance"
+  vpc_id      = aws_vpc.vpc.id
 
   ingress {
     protocol    = "tcp"
@@ -51,7 +51,7 @@ module "db" {
     Environment = "prod"
   }
   # DB subnet group
-  subnet_ids = [var.subnet1-id, var.subnet2-id]
+  subnet_ids = [aws_subnet.s1.id, aws_subnet.s2.id]
   # Final snapshot
   skip_final_snapshot = true
   # Database Deletion Protection
