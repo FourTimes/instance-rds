@@ -4,7 +4,7 @@ resource "aws_instance" "tf" {
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [aws_security_group.tf.id]
   key_name               = var.keyname
-  tags                   = merge(map("Name", "${var.vmname}"), var.additional_tags)
+  tags = merge({ Name = "${var.vmname}" }, tomap(var.additional_tags))
 }
 
 # aws_security_group
