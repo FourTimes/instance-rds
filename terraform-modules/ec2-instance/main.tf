@@ -26,5 +26,5 @@ resource "aws_security_group" "tf" {
   }
   vpc_id = var.vpc_id
   name       = "${var.vmname}-security-group"
-  tags       = merge(map("Name", "${var.vmname}"), var.additional_tags)
+  tags = merge({ Name = "${var.vmname}" }, tomap(var.additional_tags))
 }
